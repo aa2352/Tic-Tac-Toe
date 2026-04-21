@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 /**
  * UC2 performs a random toss to decide who plays first and assigns
  * symbols (X or O) to the human and computer accordingly.
@@ -9,12 +11,15 @@ public class TicTacToe {
     static char computerSymbol;
 
     /**
-     * Entry point of the program. Executes the toss logic and displays
-     * the result of turn and symbol assignment.
+     * Entry point of the program. Reads slot input and prints it back
+     * to verify correct user input handling.
      */
     public static void main(String[] args) {
         tossAndAssignSymbols();
         displayTossResult();
+        
+        int slot = getUserSlot();
+        System.out.println("Slot entered: " + slot);
     }
 
     /**
@@ -58,5 +63,18 @@ public class TicTacToe {
         System.out.println("Your symbol: " + humanSymbol);
         System.out.println("Computer symbol: " + computerSymbol);
         System.out.println("================");
+    }
+
+    /**
+     * Reads an integer slot value from the user.
+     * Input: Scanner object
+     * Output: Slot number (1-9)
+     * Hint: Validation will be added in later use cases.
+     */
+    static int getUserSlot() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("\nEnter your slot (1-9): ");
+        int slot = scanner.nextInt();
+        return slot;
     }
 }
