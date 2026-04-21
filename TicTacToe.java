@@ -51,6 +51,12 @@ public class TicTacToe {
         System.out.println("\n==== Current Board ====");
         printBoard();
         
+        // Computer makes a random valid move
+        computerMove();
+        
+        System.out.println("\n==== Board After Computer Move ====");
+        printBoard();
+        
         // Demonstrate occupied cell validation
         System.out.println("\n==== Testing with Occupied Cell ====");
         board[1][1] = 'X';  // Mark center cell as occupied
@@ -165,6 +171,26 @@ public class TicTacToe {
         }
         board[row][col] = symbol;
         return true;
+    }
+
+    /**
+     * Allows the computer to make a random valid move by generating a random slot (1-9),
+     * converting it to row and column, validating the move, and placing the symbol if valid.
+     * Loops until a valid move is found.
+     */
+    static void computerMove() {
+        boolean movePlaced = false;
+        while (!movePlaced) {
+            // Generate random slot 1-9
+            int slot = (int) (Math.random() * 9) + 1;
+            int row = getRowFromSlot(slot);
+            int col = getColFromSlot(slot);
+            if (isValidMove(row, col)) {
+                placeSymbol(row, col, computerSymbol);
+                System.out.println("Computer placed " + computerSymbol + " at slot " + slot + " (row " + row + ", col " + col + ")");
+                movePlaced = true;
+            }
+        }
     }
 
     /**
