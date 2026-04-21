@@ -20,6 +20,12 @@ public class TicTacToe {
         
         int slot = getUserSlot();
         System.out.println("Slot entered: " + slot);
+        
+        int row = getRowFromSlot(slot);
+        int col = getColFromSlot(slot);
+        
+        System.out.println("\nRow: " + row);
+        System.out.println("Column: " + col);
     }
 
     /**
@@ -76,5 +82,25 @@ public class TicTacToe {
         System.out.print("\nEnter your slot (1-9): ");
         int slot = scanner.nextInt();
         return slot;
+    }
+
+    /**
+     * Converts slot number into row index using zero-based indexing.
+     * Input: Slot number (1-9)
+     * Output: Row index (0-2)
+     * Uses division operation: (slot - 1) / 3
+     */
+    static int getRowFromSlot(int slot) {
+        return (slot - 1) / 3;
+    }
+
+    /**
+     * Converts slot number into column index using modulo operation.
+     * Input: Slot number (1-9)
+     * Output: Column index (0-2)
+     * Uses modulo operation: (slot - 1) % 3
+     */
+    static int getColFromSlot(int slot) {
+        return (slot - 1) % 3;
     }
 }
