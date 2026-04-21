@@ -9,6 +9,16 @@ public class TicTacToe {
     static boolean isHumanTurn;
     static char humanSymbol;
     static char computerSymbol;
+    static char[][] board = new char[3][3];
+
+    static {
+        // Initialize board with empty cells
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                board[i][j] = '-';
+            }
+        }
+    }
 
     /**
      * Entry point of the program. Reads slot input and prints it back
@@ -26,6 +36,16 @@ public class TicTacToe {
         
         System.out.println("\nRow: " + row);
         System.out.println("Column: " + col);
+        
+        boolean isValid = isValidMove(row, col);
+        System.out.println("\nIs Valid Move: " + isValid);
+        
+        // Test with an occupied cell
+        System.out.println("\n==== Testing with Occupied Cell ====");
+        board[1][1] = 'X';  // Mark center cell as occupied
+        System.out.println("Occupied cell (1,1) with 'X'");
+        boolean isOccupiedValid = isValidMove(1, 1);
+        System.out.println("Is Valid Move for occupied cell (1,1): " + isOccupiedValid);
     }
 
     /**
@@ -102,5 +122,25 @@ public class TicTacToe {
      */
     static int getColFromSlot(int slot) {
         return (slot - 1) % 3;
+    }
+
+    /**
+     * Checks if the given row and column are within bounds
+     * and if the target cell is empty.
+     * Input: Row, Column
+     * Output: true if valid, false otherwise.
+     */
+    static boolean isValidMove(int row, int col) {
+        // Check if row and column are within bounds (0-2)
+        if (row < 0 || row > 2 || col < 0 || col > 2) {
+            return false;
+        }
+        
+        // Check if the cell is empty
+        if (board[row][col] != '-') {
+            return false;
+        }
+        
+        return true;
     }
 }
