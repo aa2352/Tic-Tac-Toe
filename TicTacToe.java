@@ -40,7 +40,18 @@ public class TicTacToe {
         boolean isValid = isValidMove(row, col);
         System.out.println("\nIs Valid Move: " + isValid);
         
-        // Test with an occupied cell
+        // If the move is valid, place the symbol and display the board
+        if (isValid) {
+            boolean placed = placeSymbol(row, col, humanSymbol);
+            System.out.println("\nPlaced symbol " + humanSymbol + " at (" + row + "," + col + "): " + placed);
+        } else {
+            System.out.println("\nMove not placed because it is invalid.");
+        }
+
+        System.out.println("\n==== Current Board ====");
+        printBoard();
+        
+        // Demonstrate occupied cell validation
         System.out.println("\n==== Testing with Occupied Cell ====");
         board[1][1] = 'X';  // Mark center cell as occupied
         System.out.println("Occupied cell (1,1) with 'X'");
@@ -142,5 +153,30 @@ public class TicTacToe {
         }
         
         return true;
+    }
+
+    /**
+     * Places the given symbol at the specified row and column if the move is valid.
+     * Returns true if placement succeeded, false otherwise.
+     */
+    static boolean placeSymbol(int row, int col, char symbol) {
+        if (!isValidMove(row, col)) {
+            return false;
+        }
+        board[row][col] = symbol;
+        return true;
+    }
+
+    /**
+     * Prints the current board to stdout.
+     */
+    static void printBoard() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                System.out.print(board[i][j]);
+                if (j < 2) System.out.print(' ');
+            }
+            System.out.println();
+        }
     }
 }
