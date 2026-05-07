@@ -1,185 +1,163 @@
+import java.util.Random;
 import java.util.Scanner;
-import java.util.Arrays;
 
 /**
- * TicTacToe - UC8 controls the continuous game loop and alternates
- * turns until the game ends.
- * 
- * Key Concepts:
- * - While Loop: Continuous game loop that runs until win or draw
- * - Game State Flags: isHumanTurn, gameOver
- * - Turn Switching: Alternates between human and computer
+ * TicTacToe.java
+ * UC10: Detect Draw Condition
+ * Goal: Detect when no moves remain and no winner exists.
  */
 public class TicTacToe {
-    // Game state flags
-    static boolean isHumanTurn = true;
-    static boolean gameOver = false;
-    
-    // Game board representation
-    static char[] board = new char[9];
-    
-    // Scanner for user input
-    static Scanner scanner = new Scanner(System.in);
-    
-    /**
-     * Entry point of the program. Demonstrates the structure
-     * of a continuous game loop.
-     */
+
+    static char[][] board = new char[3][3];
+    static boolean isHumanTurn;
+    static char humanSymbol;
+    static char computerSymbol;
+    static boolean gameOver = false; 
+
     public static void main(String[] args) {
-        // Initialize the board
+        System.out.println("Welcome to Tic-Tac-Toe!\n");
+        
+        // --- Setup ---
+        tossAndAssignSymbols();
+        displayTossResult();
         initializeBoard();
-        
-        System.out.println("=== Welcome to TicTacToe (UC8: Continuous Turn-Based Loop) ===");
-        
-        // Continuous game loop - UC8
+        printBoard();
+
+        // --- Continuous Game Loop ---
         while (!gameOver) {
-            // Display current board state
-            displayBoard();
             
             if (isHumanTurn) {
-                // Human player's turn
-                System.out.println("Human's turn (X)");
-                getHumanMove();
-            } else {
-                // Computer player's turn
-                System.out.println("Computer's turn (O)");
-                getComputerMove();
-            }
-            
-            // Check for win or draw
-            if (checkWin('X')) {
-                System.out.println("Human wins!");
-                gameOver = true;
-            } else if (checkWin('O')) {
-                System.out.println("Computer wins!");
-                gameOver = true;
-            } else if (checkDraw()) {
-                System.out.println("It's a draw!");
-                gameOver = true;
-            } else {
-                // Switch turn for next iteration
-                isHumanTurn = !isHumanTurn;
-            }
-        }
-        
-        // Display final board state
-        displayBoard();
-        System.out.println("Game Over!");
-        scanner.close();
-    }
-    
-    /**
-     * Initializes the game board with empty spaces.
-     */
-    private static void initializeBoard() {
-        for (int i = 0; i < 9; i++) {
-            board[i] = ' ';
-        }
-    }
-    
-    /**
-     * Displays the current state of the board.
-     */
-    private static void displayBoard() {
-        System.out.println();
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                System.out.print(board[i * 3 + j]);
-                if (j < 2) System.out.print(" | ");
-            }
-            System.out.println();
-            if (i < 2) System.out.println("---------");
-        }
-        System.out.println();
-    }
-    
-    /**
-     * Gets the human player's move and updates the board.
-     */
-    private static void getHumanMove() {
-        int position;
-        boolean validMove = false;
-        
-        while (!validMove) {
-            System.out.print("Enter position (1-9): ");
-            
-            try {
-                position = scanner.nextInt();
+                System.out.println("--- Human Turn ---");
+                int slot = getUserSlot();
+                int row = getRowFromSlot(slot);
+                int col = getColFromSlot(slot);
                 
-                if (position >= 1 && position <= 9 && board[position - 1] == ' ') {
-                    board[position - 1] = 'X';
-                    validMove = true;
+                if (isValidMove(row, col)) {
+                    placeMove(row, col, humanSymbol);
+                    printBoard();
+                    
+                    if (hasWon(humanSymbol)) {
+                        System.out.println("Congratulations! You win!");
+                        gameOver = true;
+                    } else if (isDraw()) { // UC10: Updated method call
+                        System.out.println("It's a draw! Well played.");
+                        gameOver = true;
+                    } else {
+                        isHumanTurn = false;
+                    }
                 } else {
-                    System.out.println("Invalid move! Try again.");
+                    System.out.println("Invalid move. Try again.");
                 }
-            } catch (Exception e) {
-                System.out.println("Invalid input! Please enter a number between 1 and 9.");
-                scanner.nextLine(); // Clear the buffer
+                
+            } else {
+                System.out.println("--- Computer Turn ---");
+                System.out.println("Computer is thinking...");
+                computerMove();
+                printBoard();
+                
+                if (hasWon(computerSymbol)) {
+                    System.out.println("Computer wins! Better luck next time.");
+                    gameOver = true;
+                } else if (isDraw()) { // UC10: Updated method call
+                    System.out.println("It's a draw! Well played.");
+                    gameOver = true;
+                } else {
+                    isHumanTurn = true;
+                }
             }
         }
+        
+        System.out.println("Game Over!");
     }
-    
+
     /**
-     * Gets the computer player's move and updates the board.
+     * Traverses the board to check for any remaining empty cells.
+     * Output: true if draw, false otherwise.
      */
-    private static void getComputerMove() {
-        // Simple AI: find first available position
-        for (int i = 0; i < 9; i++) {
-            if (board[i] == ' ') {
-                board[i] = 'O';
-                System.out.println("Computer chose position " + (i + 1));
-                break;
+    static boolean isDraw() {
+        // Loop Traversal: Check every single cell
+        for (int r = 0; r < 3; r++) {
+            for (int c = 0; c < 3; c++) {
+                if (board[r][c] == '-') {
+                    return false; // Found an empty cell, so it is NOT a draw yet
+                }
             }
         }
+        return true; // No empty cells found, it MUST be a draw
     }
+
+    // --- Methods from UC1 to UC9 ---
     
-    /**
-     * Checks if a player has won the game.
-     * 
-     * @param player The player symbol ('X' or 'O')
-     * @return true if the player has won, false otherwise
-     */
-    private static boolean checkWin(char player) {
-        // Check rows
+    static boolean hasWon(char symbol) {
         for (int i = 0; i < 3; i++) {
-            if (board[i * 3] == player && 
-                board[i * 3 + 1] == player && 
-                board[i * 3 + 2] == player) {
-                return true;
-            }
+            if (board[i][0] == symbol && board[i][1] == symbol && board[i][2] == symbol) return true;
+            if (board[0][i] == symbol && board[1][i] == symbol && board[2][i] == symbol) return true;
         }
-        
-        // Check columns
-        for (int j = 0; j < 3; j++) {
-            if (board[j] == player && 
-                board[j + 3] == player && 
-                board[j + 6] == player) {
-                return true;
-            }
-        }
-        
-        // Check diagonals
-        if (board[0] == player && board[4] == player && board[8] == player) {
-            return true;
-        }
-        if (board[2] == player && board[4] == player && board[6] == player) {
-            return true;
-        }
-        
+        if (board[0][0] == symbol && board[1][1] == symbol && board[2][2] == symbol) return true;
+        if (board[0][2] == symbol && board[1][1] == symbol && board[2][0] == symbol) return true;
         return false;
     }
-    
-    /**
-     * Checks if the game is a draw (board is full and no winner).
-     * 
-     * @return true if the game is a draw, false otherwise
-     */
-    private static boolean checkDraw() {
-        for (int i = 0; i < 9; i++) {
-            if (board[i] == ' ') {
-                return false;
+
+    static void computerMove() {
+        Random random = new Random();
+        while (true) {
+            int slot = random.nextInt(9) + 1; 
+            int row = getRowFromSlot(slot);
+            int col = getColFromSlot(slot);
+            if (isValidMove(row, col)) {
+                System.out.println("Computer chose slot: " + slot);
+                placeMove(row, col, computerSymbol);
+                break; 
             }
         }
+    }
+    
+    static void placeMove(int row, int col, char symbol) {
+        board[row][col] = symbol;
+    }
+
+    static boolean isValidMove(int row, int col) {
+        if (row < 0 || row > 2 || col < 0 || col > 2) return false;
+        if (board[row][col] != '-') return false;
         return true;
+    }
+    
+    static int getRowFromSlot(int slot) { return (slot - 1) / 3; }
+    static int getColFromSlot(int slot) { return (slot - 1) % 3; }
+    
+    static int getUserSlot() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter a slot number (1-9): ");
+        return scanner.nextInt();
+    }
+
+    static void tossAndAssignSymbols() {
+        Random random = new Random();
+        if (random.nextInt(2) == 0) {
+            isHumanTurn = true; humanSymbol = 'X'; computerSymbol = 'O';
+        } else {
+            isHumanTurn = false; computerSymbol = 'X'; humanSymbol = 'O';
+        }
+    }
+
+    static void displayTossResult() {
+        if (isHumanTurn) System.out.println("You won the toss! You play first.");
+        else System.out.println("Computer won the toss. Computer plays first.");
+        System.out.println("Your symbol is: " + humanSymbol + "\nComputer symbol is: " + computerSymbol + "\n");
+    }
+
+    static void initializeBoard() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) board[i][j] = '-';
+        }
+    }
+
+    static void printBoard() {
+        System.out.println("-------------");
+        for (int i = 0; i < 3; i++) {
+            System.out.print("| ");
+            for (int j = 0; j < 3; j++) System.out.print(board[i][j] + " | ");
+            System.out.println("\n-------------");
+        }
     }
 }
